@@ -17,6 +17,9 @@
  *   (optional) Application redirect-uri.
  * @param array $parameters
  *   (optional) Extra parameters to send along.
+ *
+ * @return class
+ *   The OAuth v1 or v2 class, ready for further use.
  */
 function OAuthProcess($clientID, $clientSecret, $provider, string $redirectUri = NULL, array $parameters = array()) {
   $client = NULL;
@@ -57,4 +60,6 @@ function OAuthProcess($clientID, $clientSecret, $provider, string $redirectUri =
       throw new Exception('You have given a provider that is not yet supported by this framework.');
       break;
   }
+
+  return $client;
 }
