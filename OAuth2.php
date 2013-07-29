@@ -148,14 +148,14 @@ class Client {
    *   Client ID.
    * @param string $clientSecret
    *   Client secret.
-   * @param string $redirectUri
-   *   Redirect Uri for the application.
    * @param string $provider
    *   The provider to authorize with.
+   * @param string $redirectUri
+   *   (optional) Redirect Uri for the application.
    * @param array $endpoints
    *   (optional) A list of provider endpoints that can be used with shorthand.
    */
-  public function __construct($clientID, $clientSecret, $redirectUri, $provider, array $endpoints = array()) {
+  public function __construct($clientID, $clientSecret, $provider, string $redirectUri = NULL, array $endpoints = array()) {
     $this->clientID = $clientID;
     $this->clientSecret = $clientSecret;
     $this->redirectUri = $redirectUri;
