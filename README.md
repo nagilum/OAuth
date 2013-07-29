@@ -20,7 +20,7 @@ This little function determines wether you want a OAuth v1 or v2 provider and co
 If you omit the redirect-url parameter, the function will try to put it together itself from the `$_SERVER` variable.
 
 You can initiate the OAuth v1 class yourself by using the following code.
-This is what the `OAuthProcess()` function for you based on the provider you specify.
+This is what the `OAuthProcess()` function does for you based on the provider you specify.
 
 ```php
 require_once 'OAuth1.php';
@@ -78,3 +78,8 @@ Current supported providers are:
 [GitHub](http://developer.github.com/v3/),
 [Google](http://code.google.com/more/),
 [Wordpress](http://developer.wordpress.com/docs/api/).
+
+## Disclaimer
+
+This code is provided as-is, meaning I really don't give a hoot what you do with it.
+But don't complaining to me if you bring down upon yourself the wrath of NSA with your filthy missuse.
