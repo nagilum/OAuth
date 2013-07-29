@@ -7,7 +7,12 @@ Less code, me happy.
 
 ```php
 require_once 'OAuth.php';
-OAuthProcess('your-client-id', 'your-client-secret', 'provider-to-use', 'your-app-redirect-url');
+OAuthProcess(
+  'your-client-id',
+  'your-client-secret',
+  'provider-to-use',
+  'your-app-redirect-url'
+);
 ```
 
 This little function determines wether you want a OAuth v1 or v2 provider and connects, authorizes, validates, and get's user info. Nifty :)
@@ -18,7 +23,12 @@ You can initiate the OAuth v1 class yourself by using the following code.
 
 ```php
 require_once 'OAuth1.php';
-$client = new OAuth1\Client('your-client-id', 'your-client-secret', 'provider-to-use', 'your-app-redirect-url');
+$client = new OAuth1\Client(
+  'your-client-id',
+  'your-client-secret',
+  'provider-to-use',
+  'your-app-redirect-url'
+);
 $client->process();
 ```
 
@@ -26,7 +36,12 @@ And of course the same with v2.
 
 ```php
 require_once 'OAuth2.php';
-$client = new OAuth2\Client('your-client-id', 'your-client-secret', 'provider-to-use', 'your-app-redirect-url');
+$client = new OAuth2\Client(
+  'your-client-id',
+  'your-client-secret',
+  'provider-to-use',
+  'your-app-redirect-url'
+);
 $client->process();
 ```
 
@@ -34,6 +49,20 @@ The process() function for each class, as well as the OAuthProcess() function, t
 
 ```php
 $client->process(
+  array(
+    'scope' => 'email'
+  )
+);
+```
+
+or
+
+```php
+OAuthProcess(
+  'your-client-id',
+  'your-client-secret',
+  'provider-to-use',
+  null,
   array(
     'scope' => 'email'
   )
