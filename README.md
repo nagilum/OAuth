@@ -15,8 +15,8 @@ This little function determines wether you want a OAuth v1 or v2 provider and co
 If you omit the redirect-url parameter, the function will try to put it together itself.
 
 Current supported providers are:
-[Bitly](#),
-[Facebook](#),
-[GitHub](#),
-[Google](#),
-[Wordpress](#).
+[Bitly](http://dev.bitly.com/authentication.html),
+[Facebook](https://developers.facebook.com/docs/),
+[GitHub](http://developer.github.com/v3/),
+[Google](http://code.google.com/more/),
+[Wordpress](http://developer.wordpress.com/docs/api/).
