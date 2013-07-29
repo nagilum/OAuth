@@ -7,10 +7,12 @@ Less code, me happy.
 
 ```php
 require_once 'OAuth.php';
-OAuthProcess('your-client-id', 'your-client-secret', 'your-app-redirect-url', 'provider-to-use');
+OAuthProcess('your-client-id', 'your-client-secret', 'provider-to-use', 'your-app-redirect-url');
 ```
 
 This little function determines wether you want a OAuth v1 or v2 provider and connects, authorizes, validates, and get's user info. Nifty :)
+
+If you omit the redirect-url parameter, the function will try to put it together itself.
 
 Current supported providers are:
 [Bitly](#),
