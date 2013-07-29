@@ -31,7 +31,8 @@ function OAuthProcess($clientID, $clientSecret, $provider, string $redirectUri =
     throw new Exception('Neither Client ID, client secret, nor provider can be blank.');
 
   // Compile the redirect-uri if you omitted the param.
-  if ($redirectUri == NULL)
+  if ($redirectUri == NULL ||
+      empty($redirectUri))
     $redirectUri =
       'http' .
       (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '') .
