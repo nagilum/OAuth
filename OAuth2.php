@@ -59,26 +59,36 @@ class Client {
       'authorization' => 'https://bitly.com/oauth/authorize',
       'token'         => 'https://api-ssl.bitly.com/oauth/access_token',
       'user'          => 'https://api-ssl.bitly.com/v3/user/info',
+      'keys'          => 'http://bitly.com/a/oauth_apps',
+      'documentation' => 'http://dev.bitly.com/authentication.html',
     ),
     'facebook' => array(
       'authorization' => 'https://graph.facebook.com/oauth/authorize',
       'token'         => 'https://graph.facebook.com/oauth/access_token',
       'user'          => 'https://graph.facebook.com/me',
+      'keys'          => 'https://developers.facebook.com/apps',
+      'documentation' => 'https://developers.facebook.com/docs/',
     ),
     'github' => array(
       'authorization' => 'https://github.com/login/oauth/authorize',
       'token'         => 'https://github.com/login/oauth/access_token',
       'user'          => 'https://api.github.com/user',
+      'keys'          => 'https://github.com/settings/applications',
+      'documentation' => 'http://developer.github.com/v3/',
     ),
     'google' => array(
       'authorization' => 'https://accounts.google.com/o/oauth2/auth',
       'token'         => 'https://accounts.google.com/o/oauth2/token',
       'user'          => 'https://www.googleapis.com/oauth2/v2/userinfo',
+      'keys'          => 'https://code.google.com/apis/console/',
+      'documentation' => 'http://code.google.com/more/',
     ),
     'wordpress' => array(
       'authorization' => 'https://public-api.wordpress.com/oauth2/authorize',
       'token'         => 'https://public-api.wordpress.com/oauth2/token',
       'user'          => 'https://public-api.wordpress.com/rest/v1/me/?pretty=1',
+      'keys'          => 'https://developer.wordpress.com/apps',
+      'documentation' => 'http://developer.wordpress.com/docs/api/',
     ),
   );
 
