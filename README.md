@@ -17,9 +17,10 @@ OAuthProcess(
 
 This little function determines wether you want a OAuth v1 or v2 provider and connects, authorizes, validates, and get's user info. Nifty :)
 
-If you omit the redirect-url parameter, the function will try to put it together itself.
+If you omit the redirect-url parameter, the function will try to put it together itself from the `$_SERVER` variable.
 
 You can initiate the OAuth v1 class yourself by using the following code.
+This is what the `OAuthProcess()` function for you based on the provider you specify.
 
 ```php
 require_once 'OAuth1.php';
@@ -45,7 +46,7 @@ $client = new OAuth2\Client(
 $client->process();
 ```
 
-The process() function for each class, as well as the OAuthProcess() function, takes an extra parameter array if you wish to add scope or the like.
+The `process()` function for each class, as well as the `OAuthProcess()` function, takes an extra parameter array if you wish to add scope or the like.
 
 ```php
 $client->process(
@@ -68,6 +69,8 @@ OAuthProcess(
   )
 );
 ```
+
+## Providers
 
 Current supported providers are:
 [Bitly](http://dev.bitly.com/authentication.html),
