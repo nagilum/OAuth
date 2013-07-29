@@ -82,4 +82,4 @@ Current supported providers are:
 ## Disclaimer
 
 This code is provided as-is, meaning I really don't give a hoot what you do with it.
-But don't complaining to me if you bring down upon yourself the wrath of NSA with your filthy missuse.
+But don't come complaining to me if you bring down upon yourself the wrath of NSA with your filthy missuse.
