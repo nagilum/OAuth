@@ -30,6 +30,16 @@ $client = new OAuth2\Client('your-client-id', 'your-client-secret', 'provider-to
 $client->process();
 ```
 
+The process() function for each class, as well as the OAuthProcess() function, takes an extra parameter array if you wish to add scope or the like.
+
+```php
+$client->process(
+  array(
+    'scope' => 'email'
+  )
+);
+```
+
 Current supported providers are:
 [Bitly](http://dev.bitly.com/authentication.html),
 [Facebook](https://developers.facebook.com/docs/),
