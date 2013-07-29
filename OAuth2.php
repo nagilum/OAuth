@@ -161,6 +161,7 @@ class Client {
     $this->redirectUri = $redirectUri;
     $this->provider = $provider;
 
+    // Suplement the existing endpoints with new ones provided by user.
     if (count($endpoints)) {
       foreach ($endpoints as $key => $value) {
         if (!isset($this->endpoints[$key]))
@@ -168,6 +169,8 @@ class Client {
             'authorization' => '',
             'token'         => '',
             'user'          => '',
+            'keys'          => '',
+            'documentation' => '',
           );
 
         if (is_array($value) &&
@@ -178,6 +181,17 @@ class Client {
       }
     }
 
+    // Construct the redirect-url if non was provided.
+    if ($this->redirectUri == NULL ||
+        empty($this->redirectUri))
+      $this->redirectUri =
+        'http' .
+        (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '') .
+        '://' .
+        $_SERVER['HTTP_HOST'] .
+        '/';
+
+    // A bit of error trapping.
     if ($this->clientID == NULL ||
         empty($this->clientID))
       throw new Exception('Client ID has not been set.');
@@ -197,6 +211,7 @@ class Client {
     if (!isset($this->endpoints[$this->provider]))
       throw new Exception('Provider endpoints has not been set.');
 
+    // Check if this is the callback from the autorize() process.
     if (isset($_GET['code']))
       $this->getAuthorizationCode();
   }
@@ -211,15 +226,12 @@ class Client {
     if (isset($parameters['scope']))
       $this->scope = $parameters['scope'];
 
-    $parameters = array_merge(
-      array(
-        'response_type' => 'code',
-        'client_id'     => $this->clientID,
-        'redirect_uri'  => $this->redirectUri,
-      ),
-      $parameters
-    );
+    // Add the required parameters.
+    $parameters['response_type'] = 'code';
+    $parameters['client_id']     = $this->clientID;
+    $parameters['redirect_uri']  = $this->redirectUri;
 
+    // Build the actual url.
     $authorizationURL =
       $this->endpoints[$this->provider]['authorization'] .
       '?' . http_build_query($parameters, NULL, '&');
@@ -307,6 +319,7 @@ class Client {
     if (!$this->hasAuthorizationCode)
       throw new Exception('An autorization has not taken place yet.');
 
+    // Add the required parameters.
     $parameters = array(
       'client_id'     => $this->clientID,
       'client_secret' => $this->clientSecret,
@@ -316,14 +329,14 @@ class Client {
       'scope'         => $this->scope,
     );
 
+    // Execute the call and fetch the results.
     $response = $this->executeRequest(
       $this->endpoints[$this->provider]['token'],
       $parameters,
       self::HTTP_METHOD_POST
     );
 
-    echo '<pre>' . print_r($response, TRUE) . '</pre>';
-
+    // Analyze the response and fetch the access-token.
     if (is_array($response) &&
         isset($response['code']) &&
         isset($response['result']) &&
@@ -377,6 +390,7 @@ class Client {
     if (!$this->hasAccessToken)
       throw new Exception('Access token not present.');
 
+    // Add the required parameters and http-headers.
     $parameters = array(
       'access_token' => $this->accessToken,
     );
@@ -385,6 +399,7 @@ class Client {
       'authorization' => $this->tokenType . ' ' . $this->accessToken,
     );
 
+    // Execute the call.
     $response = $this->executeRequest(
       $this->endpoints[$this->provider]['user'],
       $parameters,
@@ -392,6 +407,7 @@ class Client {
       $httpHeaders
     );
 
+    // @todo Analyze the output and place it in a common place.
     echo '<pre>' . print_r($response, TRUE) . '</pre>';
   }
 
@@ -404,19 +420,16 @@ class Client {
    * @return bool
    */
   public function process(array $parameters = array()) {
+    // Authorize if needed.
     if (!$this->hasAuthorizationCode)
       $this->authorize($parameters);
 
-    echo 'authorizationCode: ' . $this->authorizationCode . '<br />';
-    echo '<strong>getAccessToken()</strong><br />';
-
+    // Fetch the access-token if needed.
     if ($this->hasAuthorizationCode &&
         !$this->hasAccessToken)
       $this->getAccessToken();
 
-    echo 'accessToken: ' . $this->accessToken . '<br />';
-    echo '<strong>getUserInfo()</strong><br />';
-
+    // Finally, fetch the user-info.
     if ($this->hasAuthorizationCode &&
         $this->hasAccessToken)
       $this->getUserInfo();
