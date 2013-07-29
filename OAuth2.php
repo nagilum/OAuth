@@ -83,6 +83,13 @@ class Client {
       'keys'          => 'https://code.google.com/apis/console/',
       'documentation' => 'http://code.google.com/more/',
     ),
+    'live' => array(
+      'authorization' => 'https://oauth.live.com/authorize',
+      'token'         => 'https://oauth.live.com/token',
+      'user'          => 'https://apis.live.net/v5.0/me',
+      'keys'          => 'https://manage.dev.live.com/Applications',
+      'documentation' => 'http://msdn.microsoft.com/en-us/library/hh243648.aspx',
+    ),
     'wordpress' => array(
       'authorization' => 'https://public-api.wordpress.com/oauth2/authorize',
       'token'         => 'https://public-api.wordpress.com/oauth2/token',
@@ -155,7 +162,7 @@ class Client {
    * @param array $endpoints
    *   (optional) A list of provider endpoints that can be used with shorthand.
    */
-  public function __construct($clientID, $clientSecret, $provider, string $redirectUri = NULL, array $endpoints = array()) {
+  public function __construct($clientID, $clientSecret, $provider, $redirectUri = NULL, array $endpoints = array()) {
     $this->clientID = $clientID;
     $this->clientSecret = $clientSecret;
     $this->redirectUri = $redirectUri;
