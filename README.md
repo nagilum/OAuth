@@ -14,6 +14,22 @@ This little function determines wether you want a OAuth v1 or v2 provider and co
 
 If you omit the redirect-url parameter, the function will try to put it together itself.
 
+You can initiate the OAuth v1 class yourself by using the following code.
+
+```php
+require_once 'OAuth1.php';
+$client = new OAuth1\Client('your-client-id', 'your-client-secret', 'provider-to-use', 'your-app-redirect-url');
+$client->process();
+```
+
+And of course the same with v2.
+
+```php
+require_once 'OAuth2.php';
+$client = new OAuth2\Client('your-client-id', 'your-client-secret', 'provider-to-use', 'your-app-redirect-url');
+$client->process();
+```
+
 Current supported providers are:
 [Bitly](http://dev.bitly.com/authentication.html),
 [Facebook](https://developers.facebook.com/docs/),
