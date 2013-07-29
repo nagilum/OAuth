@@ -10,6 +10,8 @@ require_once 'OAuth.php';
 OAuthProcess('your-client-id', 'your-client-secret', 'your-app-redirect-url', 'provider-to-use');
 ```
 
+This little function determines wether you want a OAuth v1 or v2 provider and connects, authorizes, validates, and get's user info. Nifty :)
+
 Current supported providers are:
 [Bitly](#),
 [Facebook](#),
