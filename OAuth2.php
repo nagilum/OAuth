@@ -3,6 +3,10 @@
 /**
  * Wrapper framework for OAuth2 with included providers.
  *
+ * @author Stian Hanger <pdnagilum@gmail.com>
+ *
+ * ---
+ *
  * Released under the MIT license.
  *
  * Copyright (c) 2013 Stian Hanger
@@ -45,13 +49,64 @@ define('TOKEN_TYPE',            'token_type');
 define('UNIQUE_ID',             'unique_id');
 define('USER_INFO',             'user_info');
 
+/**
+ * The main OAuth client class.
+ */
 class Client {
+  /**
+   * Authorization code.
+   *
+   * The authorization code return from the provider after the first
+   * successfull login.
+   *
+   * @var string
+   */
   protected $authorizationCode = NULL;
-  protected $clientID          = NULL;
-  protected $clientSecret      = NULL;
-  protected $provider          = NULL;
-  protected $redirectUri       = NULL;
 
+  /**
+   * Client ID.
+   *
+   * The client ID given by the provider when creating an app.
+   *
+   * @var string
+   */
+  protected $clientID          = NULL;
+
+  /**
+   * Client secret.
+   *
+   * The client secret given by the provider when creating an app.
+   *
+   * @var string
+   */
+  protected $clientSecret      = NULL;
+
+  /**
+   * Provider.
+   *
+   * The shorthand name of the provider to use.
+   *
+   * @var string
+   */
+  protected $provider          = NULL;
+
+  /**
+   * Redirect URI.
+   *
+   * The URL given to the provider at first authorization-call that they will
+   * send you back to with a valid authorization code, if login is successfull.
+   *
+   * @var string
+   */
+  protected $redirectURI       = NULL;
+
+  /**
+   * A list of public variables (read only) the are available from outside the
+   * library. Use $instance->var_name to access them. A list of the real names
+   * can be found in the define list at the start of this file.
+   *
+   * @var array
+   */
   protected $public = array(
     ACCESS_TOKEN     => NULL,
     HAS_ACCESS_TOKEN => FALSE,
@@ -63,6 +118,11 @@ class Client {
     USER_INFO        => array(),
     );
 
+  /**
+   * A list of all configured endpoints for providers.
+   *
+   * @var array
+   */
   protected $endpoints = array(
     'bitly' => array(
       OAUTH_URL_AUTH  => 'https://bitly.com/oauth/authorize',
@@ -97,16 +157,43 @@ class Client {
       ),
     );
 
-  public function __construct($clientID, $clientSecret, $provider, $redirectUri = NULL, $refreshToken = NULL) {
+  /**
+   * Construct.
+   *
+   * @param string $clientID
+   *   Client ID.
+   * @param string $clientSecret
+   *   Client secret.
+   * @param string $provider
+   *   Short hand name for the provider.
+   * @param string $redirectURI
+   *   (optional) The redirect URI to use when authorizing first login. If no
+   *   URI is given, the library tries to build one from the _SERVER array.
+   * @param array $endpoints
+   *   (optional) Additional endpoints to add to the list of available providers
+   *   and endpoints.
+   * @param string $refreshToken
+   *   Saved token to try and refresh the authorization so you won't have to go
+   *   through the authorization process again.
+   */
+  public function __construct($clientID, $clientSecret, $provider, $redirectURI = NULL, $endpoints = array(), $refreshToken = NULL) {
     $this->clientID = $clientID;
     $this->clientSecret = $clientSecret;
     $this->provider = $provider;
-    $this->redirectUri = $redirectUri;
-    $this->refreshToken = $refreshToken;
+    $this->redirectURI = $redirectURI;
 
-    if ($this->redirectUri == NULL ||
-        empty($this->redirectUri))
-      $this->redirectUri =
+    if (is_array($endpoints) &&
+        count($endpoints)) {
+      foreach ($endpoints as $provider => $urls) {
+        $this->endpoints[$provider] = $urls;
+      }
+    }
+
+    $this->public[REFRESH_TOKEN] = $refreshToken;
+
+    if ($this->redirectURI == NULL ||
+        empty($this->redirectURI))
+      $this->redirectURI =
       'http' .
       (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on' ? 's' : '') .
       '://' .
@@ -116,6 +203,14 @@ class Client {
     $this->handlePageRequest();
   }
 
+  /**
+   * Reads the value of the given variable in the public array.
+   *
+   * @param string $name
+   *   The name of the variable to retrieve.
+   *
+   * @return var
+   */
   public function __get($name) {
     if (isset($this->public[$name]))
       return $this->public[$name];
@@ -123,21 +218,20 @@ class Client {
     return FALSE;
   }
 
-  public function addEndpoint($providerShortHandName, $urlAuth, $urlToken, $urlUser = NULL, $urlUserIncludeHeader = FALSE) {
-    $this->public[$providerShortHandName] = array(
-      OAUTH_URL_AUTH  => $urlAuth,
-      OAUTH_URL_TOKEN => $urlToken,
-      OAUTH_URL_USER  => $urlUser,
-      OAUTH_URL_USER_HEADER => $urlUserIncludeHeader,
-      );
-  }
-
+  /**
+   * Initiate the authorization process by redirecting to the provider.
+   *
+   * Builds the authorization URL and redirects the browser there.
+   *
+   * @param array $scope
+   *   Scope to add to the authorization process.
+   */
   public function authorize($scope = NULL) {
     $parameters = array(
       'client_id'     => $this->clientID,
       'display'       => 'page',
       'locale'        => 'en',
-      'redirect_uri'  => $this->redirectUri,
+      'redirect_uri'  => $this->redirectURI,
       'response_type' => RESPONSE_TYPE_CODE,
       );
 
@@ -168,6 +262,15 @@ class Client {
     exit;
   }
 
+  /**
+   * Builds a single query string from an array of content.
+   *
+   * @param array $array
+   *   A list of variables to build from.
+   *
+   * @return string
+   *   The compilled query string.
+   */
   protected function buildQueryString($array) {
     $result = '';
     $prefix = '';
@@ -182,20 +285,34 @@ class Client {
     return $result;
   }
 
-  protected function debug($var, $func = NULL) {
-    if ($func !== NULL)
-      echo '<strong>' . $func . '()</strong><br />';
+  /**
+   * Gets a list of providers from the endpoint array.
+   *
+   * @return array
+   *   A list of providers.
+   */
+  public function getProviders() {
+    $providers = array();
 
-    foreach ($GLOBALS as $tmp_varname => $tmp_value) {
-      if ($tmp_value == $var) {
-        echo '<strong>$' . $tmp_varname . '</strong><br />';
-        break;
+    if (count($this->endpoints)) {
+      foreach ($this->endpoints as $provider => $endpoints) {
+        $providers[] = $provider;
       }
     }
 
-    echo '<pre>' . (is_bool($var) ? ($var === TRUE ? 'TRUE' : 'FALSE') : print_r($var, TRUE)) . '</pre>';
+    return $providers;
   }
 
+  /**
+   * The main handler for the authorization process.
+   *
+   * It will verify the authorization code and try to retrieve an access token
+   * for further use. If a refresh token is provided a backhand call is made to
+   * try and verify it.
+   *
+   * After the access token has been retrieved, a call will be attempted to
+   * retrieve user-information from the provider.
+   */
   protected function handlePageRequest() {
     if (!empty($_GET[ACCESS_TOKEN]))
       return;
@@ -248,6 +365,14 @@ class Client {
     }
   }
 
+  /**
+   * Stores the given token in the public array.
+   *
+   * @param array $token
+   *   The token-array to save.
+   * @param array $error
+   *   The error information.
+   */
   protected function handleTokenResponse($token, $error = NULL) {
     if (!empty($token)) {
       $this->public[ACCESS_TOKEN]     = $token[ACCESS_TOKEN];
@@ -257,6 +382,12 @@ class Client {
     }
   }
 
+  /**
+   * Stores the user-information in the public array.
+   *
+   * @param json $response
+   *   The response object from the provider.
+   */
   protected function handleUserInformation($response) {
     $userInfo = (array) json_decode($response);
 
@@ -270,6 +401,15 @@ class Client {
       $this->public[UNIQUE_ID] = $userInfo['id'];
   }
 
+  /**
+   * Splits up a query string into an array.
+   *
+   * @param string $query
+   *   The query string to split up.
+   *
+   * @return array
+   *   A list of the variables and their values from the query string.
+   */
   protected function parseQueryString($query) {
     $result = array();
     $arr = preg_split('/&/', $query);
@@ -284,6 +424,15 @@ class Client {
     return $result;
   }
 
+  /**
+   * Attempts to retrieve an access token from the provider.
+   *
+   * @param array $content
+   *   An array of parameters to send along with the call.
+   *
+   * @return array
+   *   The token from the provider.
+   */
   protected function requestAccessToken($content) {
     $response = $this->sendRequest(
       $this->endpoints[$this->provider][OAUTH_URL_TOKEN],
@@ -305,11 +454,20 @@ class Client {
     return FALSE;
   }
 
+  /**
+   * Attempts to retrieve an access token via a refresh token.
+   *
+   * @param string $refreshToken
+   *   The refresh token to use.
+   *
+   * @return array
+   *   The access token array.
+   */
   protected function requestAccessTokenByRefreshToken($refreshToken) {
     return $this->requestAccessToken(
       array(
         'client_id'     => $this->clientID,
-        'redirect_uri'  => $this->redirectUri,
+        'redirect_uri'  => $this->redirectURI,
         'client_secret' => $this->clientSecret,
         'refresh_token' => $refreshToken,
         'grant_type'    => REFRESH_TOKEN,
@@ -317,11 +475,20 @@ class Client {
       );
   }
 
+  /**
+   * Attempts to retrieve an access token from the provider.
+   *
+   * @param string $verifier
+   *   The authorization code to use.
+   *
+   * @return array
+   *   The access token array.
+   */
   protected function requestAccessTokenByVerifier($verifier) {
     return $this->requestAccessToken(
       array(
         'client_id'     => $this->clientID,
-        'redirect_uri'  => $this->redirectUri,
+        'redirect_uri'  => $this->redirectURI,
         'client_secret' => $this->clientSecret,
         'code'          => $verifier,
         'grant_type'    => AUTHENTICATION_CODE
@@ -329,6 +496,12 @@ class Client {
       );
   }
 
+  /**
+   * Attempts to retrieve user information from the provider.
+   *
+   * @return array
+   *   The provided information.
+   */
   protected function requestUserInformation() {
     if (isset($this->endpoints[$this->provider][OAUTH_URL_USER]) &&
         !empty($this->endpoints[$this->provider][OAUTH_URL_USER])) {
@@ -348,6 +521,23 @@ class Client {
     return FALSE;
   }
 
+  /**
+   * The main send routine for all calls.
+   *
+   * @param string $url
+   *   The URL to call.
+   * @param string $method
+   *   (optional) The HTTP method to use. Default: 'GET'.
+   * @param array $data
+   *   (optional) An array of data variables to send along. Default: array().
+   * @param array $headers
+   *   (optional) An array of headers to send along. Default: array().
+   * @param bool $useContext
+   *   (optional) Whether or not to include headers and data variables. Default: TRUE.
+   *
+   * @return string
+   *   The response content from the URL.
+   */
   protected function sendRequest($url, $method = HTTP_METHOD_GET, $data = array(), $headers = array(), $useContext = TRUE) {
     if ($useContext) {
       $content = '';
