@@ -5,6 +5,35 @@ Less code, me happy.
 
 ## Example of usage
 
+### OAuth1
+
+### OAuth2
+
+```php
+require_once 'OAuth2.php';
+
+$client = new OAuth2\Client(
+  'your-apps-client-id',
+  'your-apps-client-secret',
+  'shorthand-provider-name',
+  'callback-uri-for-client'
+  );
+
+if (!$client->is_authorized)
+  $client->authorize();
+```
+
+When you create a new instance of the class it will run through and try to
+retrieve an access token and user information if the authorization code has
+been provided.
+
+When you call the `authorize()` function, you will be redirected to the
+provider's login page. If you're already logged in, you might just get
+automatically redirected back to the callback URI.
+
+Google requires that the callback URI is your-domain.com/oauth2callback, so you
+might as well use that for all providers.
+
 ## Providers
 
 Currently available providers in this library are:
