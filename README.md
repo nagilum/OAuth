@@ -34,6 +34,10 @@ automatically redirected back to the callback URI.
 Google requires that the callback URI is your-domain.com/oauth2callback, so you
 might as well use that for all providers.
 
+When you have gained full authorization, the general user information will be
+stored in the `$client->user_info` and your private unique ID from the provider
+will be stored in `$client->unique_id`.
+
 ## Providers
 
 Currently available providers in this library are:
