@@ -39,6 +39,42 @@ Currently available providers in this library are:
 [Live](http://msdn.microsoft.com/en-us/library/hh243647.aspx),
 [Wordpress](http://developer.wordpress.com/docs/api/).
 
+You can add more provider endpoints by adding an extra parameter when you initialize the class, like so:
+
+```php
+$client = new OAuth2\Client(
+  'your-apps-client-id',
+  'your-apps-client-secret',
+  'shorthand-provider-name',
+  'callback-uri-for-client',
+  'array-of-provider-endpoints'
+  );
+```
+
+The array must be formatted as such:
+
+```php
+$endpoints = array(
+  'provider-shorthand-name' => array(
+    OAUTH_URL_AUTH => 'url-for-oauth-authorization',
+    OAUTH_URL_TOKEN => 'url-for-oauth-access-token',
+    OAUTH_URL_USER => 'url-for-user-information',
+    ),
+  );
+```
+
+Example of endpoints for Facebook:
+
+```php
+$endpoints = array(
+  'facebook' => array(
+    OAUTH_URL_AUTH => 'https://graph.facebook.com/oauth/authorize',
+    OAUTH_URL_TOKEN => 'https://graph.facebook.com/oauth/access_token',
+    OAUTH_URL_USER => 'https://graph.facebook.com/me',
+    ),
+  );
+```
+
 ## License
 
 These libraries are released under the MIT license.
