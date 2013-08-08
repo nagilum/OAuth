@@ -1,13 +1,9 @@
-# OAuth v1 and v2 libs for PHP.
+# OAuth v2 lib for PHP.
 
-I wrote this wrapper framework to make the login part of my other projects to a
-minimum. Less code, me happy.
+I wrote this wrapper framework to make the login part of my other projects to a minimum.
+Less code, me happy.
 
 ## Example of usage
-
-### OAuth1
-
-### OAuth2
 
 ```php
 require_once 'OAuth2.php';
@@ -23,28 +19,18 @@ if (!$client->is_authorized)
   $client->authorize();
 ```
 
-When you create a new instance of the class it will run through and try to
-retrieve an access token and user information if the authorization code has
-been provided.
+When you create a new instance of the class it will run through and try to retrieve an access token and user information if the authorization code has been provided.
 
-When you call the `authorize()` function, you will be redirected to the
-provider's login page. If you're already logged in, you might just get
-automatically redirected back to the callback URI.
+When you call the `authorize()` function, you will be redirected to the provider's login page.
+If you're already logged in, you might just get automatically redirected back to the callback URI.
 
-Google requires that the callback URI is your-domain.com/oauth2callback, so you
-might as well use that for all providers.
+Google requires that the callback URI is your-domain.com/oauth2callback, so you might as well use that for all providers.
 
-When you have gained full authorization, the general user information will be
-stored in the `$client->user_info` and your private unique ID from the provider
-will be stored in `$client->unique_id`.
+When you have gained full authorization, the general user information will be stored in the `$client->user_info` and your private unique ID from the provider will be stored in `$client->unique_id`.
 
 ## Providers
 
 Currently available providers in this library are:
-
-### Oauth1
-
-### OAuth2
 
 [Bitly](http://dev.bitly.com/authentication.html),
 [Facebook](https://developers.facebook.com/docs/),
