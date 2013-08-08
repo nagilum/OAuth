@@ -1,4 +1,4 @@
-# OAuth v2 lib for PHP.
+# OAuth2 lib for PHP
 
 I wrote this wrapper framework to make the login part of my other projects to a minimum.
 Less code, me happy.
